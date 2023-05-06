@@ -48,27 +48,18 @@ class Status:
         self.game = game
         self.auto_latest = True
         self.dir = os.path.join(datadir, game)
-        _l = os.listdir(self.dir)
-        if len(_l):
-            self.latest = os.path.basename(sorted(os.listdir(self.dir))[-1])
-            print('Latest (auto): "%s"' % self.latest)
-        else:
-            self.latest = ''
-            print('Latest: "%s"' % self.latest)
+        self.re(os.path.basename((['',] + sorted(os.listdir(self.dir)))[-1]))
 
-        self._update_next()
-        print('Next:', self.next)
-
-    def gotoa(self, name: str) -> int:
+    def re(self, name: str) -> int:
         if not self._exists(name):
             print('File Not Found: "%s"' % name)
             print('Latest: "%s"' % self.latest)
-            print('Next: "%s"' % self.next)
+            print('Next:   "%s"' % self.next)
             return 1
         self.latest = name
         print('Latest: "%s"' % self.latest)
         self._update_next()
-        print('Next: "%s"' % self.next)
+        print('Next:   "%s"' % self.next)
         return 0
 
     def save(self, name: str = '', force: bool = False) -> int:
@@ -78,7 +69,7 @@ class Status:
         if not name:
             name = self.next
 
-        print('.save: "%s"'% name)
+        print('.save:  "%s"' % name)
         if self._exists(name):
             print('File Already Exist: "%s"' % name)
             if force:
@@ -87,30 +78,21 @@ class Status:
                 return 1
 
         save_tar(config[self.game]['path'], self._join(name))
-        self.latest = name
-        print('Latest: "%s"' % self.latest)
-        self._update_next()
-        print('Next: "%s"' % self.next)
-        return 0
+        return self.re(name)
 
     def load(self, name: str = '') -> int:
-        print('.load: "%s"'% name)
         if not name:
             name = self.latest
         if not name:
             print('You have no archive!')
             return 1
 
-        print('.load: "%s"'% name)
+        print('.load:  "%s"' % name)
         if not self._exists(name):
             print('File Not Exist: "%s"' % name)
             return 1
         load_tar(config[self.game]['path'], self._join(name))
-        self.latest = name
-        print('Latest: "%s"' % self.latest)
-        self._update_next()
-        print('Next: "%s"' % self.next)
-        return 0
+        return self.re(name)
 
     def _update_next(self) -> str:
         self.next = autonext(self.latest, self.game)
@@ -140,7 +122,7 @@ def re(arg: str):
     if len(arg) == 1:
         b.status(b.game)
     else:
-        b.gotoa(arg[1])
+        b.re(arg[1])
 
 
 def save(arg: str):

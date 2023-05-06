@@ -3,17 +3,17 @@ import shutil
 
 
 def save_tar(gamedata: str, archive: str) -> None:
-    print('.save_tar "%s" -> "%s"' % (gamedata, archive))
     assert archive.endswith('.tar')
     archive = archive[:-4]
+    print('.save_tar "%s" -> "%s"' % (gamedata, archive))
     shutil.make_archive(archive, 'tar', gamedata)
 
 
 def load_tar(gamedata: str, archive: str) -> None:
-    print('.load_tar "%s" <- "%s"' % (gamedata, archive))
     assert archive.endswith('.tar')
     save_tar(gamedata, archive[:-4] + '.cache.tar')
     shutil.rmtree(gamedata)
+    print('.load_tar "%s" <- "%s"' % (gamedata, archive))
     shutil.unpack_archive(archive, gamedata, 'tar')
 
 
